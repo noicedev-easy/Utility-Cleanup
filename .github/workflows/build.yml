@@ -1,0 +1,73 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Swift binary
+        run: swift build -c release
+
+      - name: Create macOS .app bundle
+        run: |
+          mkdir -p "Utility Cleanup.app/Contents/MacOS"
+          mkdir -p "Utility Cleanup.app/Contents/Resources"
+          cp .build/release/UtilityCleanup "Utility Cleanup.app/Contents/MacOS/UtilityCleanup"
+
+          if [ -f "icon.png" ]; then
+            mkdir icon.iconset
+            sips -z 16 16     icon.png --out icon.iconset/icon_16x16.png
+            sips -z 32 32     icon.png --out icon.iconset/icon_16x16@2x.png
+            sips -z 32 32     icon.png --out icon.iconset/icon_32x32.png
+            sips -z 64 64     icon.png --out icon.iconset/icon_32x32@2x.png
+            sips -z 128 128   icon.png --out icon.iconset/icon_128x128.png
+            sips -z 256 256   icon.png --out icon.iconset/icon_128x128@2x.png
+            sips -z 256 256   icon.png --out icon.iconset/icon_256x256.png
+            sips -z 512 512   icon.png --out icon.iconset/icon_256x256@2x.png
+            sips -z 512 512   icon.png --out icon.iconset/icon_512x512.png
+            cp icon.png icon.iconset/icon_512x512@2x.png
+            iconutil -c icns icon.iconset -o "Utility Cleanup.app/Contents/Resources/AppIcon.icns"
+          fi
+
+          cat << 'EOF' > "Utility Cleanup.app/Contents/Info.plist"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://apple.com">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleExecutable</key>
+            <string>UtilityCleanup</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.opensource.utilitycleanup</string>
+            <key>CFBundleName</key>
+            <string>Utility Cleanup</string>
+            <key>CFBundleIconFile</key>
+            <string>AppIcon</string>
+            <key>CFBundleVersion</key>
+            <string>1.0</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1.0</string>
+            <key>LSMinimumSystemVersion</key>
+            <string>13.0</string>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Package into .dmg
+        run: |
+          mkdir dmg_folder
+          cp -R "Utility Cleanup.app" dmg_folder/
+          ln -s /Applications dmg_folder/Applications
+          hdiutil create -volname "Utility Cleanup" -srcfolder dmg_folder -ov -format UDZO UtilityCleanup-macOS.dmg
+
+      - name: Upload DMG Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UtilityCleanup-macOS-Installer
+          path: UtilityCleanup-macOS.dmg
