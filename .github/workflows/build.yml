@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-latest
@@ -21,18 +24,18 @@ jobs:
           mkdir -p "Utility Cleanup.app/Contents/Resources"
           cp .build/release/UtilityCleanup "Utility Cleanup.app/Contents/MacOS/UtilityCleanup"
 
-          if [ -f "icon.png" ]; then
+          if [ -f "Utility Cleanup.png" ]; then
             mkdir icon.iconset
-            sips -z 16 16     icon.png --out icon.iconset/icon_16x16.png
-            sips -z 32 32     icon.png --out icon.iconset/icon_16x16@2x.png
-            sips -z 32 32     icon.png --out icon.iconset/icon_32x32.png
-            sips -z 64 64     icon.png --out icon.iconset/icon_32x32@2x.png
-            sips -z 128 128   icon.png --out icon.iconset/icon_128x128.png
-            sips -z 256 256   icon.png --out icon.iconset/icon_128x128@2x.png
-            sips -z 256 256   icon.png --out icon.iconset/icon_256x256.png
-            sips -z 512 512   icon.png --out icon.iconset/icon_256x256@2x.png
-            sips -z 512 512   icon.png --out icon.iconset/icon_512x512.png
-            cp icon.png icon.iconset/icon_512x512@2x.png
+            sips -z 16 16     "Utility Cleanup.png" --out icon.iconset/icon_16x16.png
+            sips -z 32 32     "Utility Cleanup.png" --out icon.iconset/icon_16x16@2x.png
+            sips -z 32 32     "Utility Cleanup.png" --out icon.iconset/icon_32x32.png
+            sips -z 64 64     "Utility Cleanup.png" --out icon.iconset/icon_32x32@2x.png
+            sips -z 128 128   "Utility Cleanup.png" --out icon.iconset/icon_128x128.png
+            sips -z 256 256   "Utility Cleanup.png" --out icon.iconset/icon_128x128@2x.png
+            sips -z 256 256   "Utility Cleanup.png" --out icon.iconset/icon_256x256.png
+            sips -z 512 512   "Utility Cleanup.png" --out icon.iconset/icon_256x256@2x.png
+            sips -z 512 512   "Utility Cleanup.png" --out icon.iconset/icon_512x512.png
+            cp "Utility Cleanup.png" icon.iconset/icon_512x512@2x.png
             iconutil -c icns icon.iconset -o "Utility Cleanup.app/Contents/Resources/AppIcon.icns"
           fi
 
@@ -66,8 +69,9 @@ jobs:
           ln -s /Applications dmg_folder/Applications
           hdiutil create -volname "Utility Cleanup" -srcfolder dmg_folder -ov -format UDZO UtilityCleanup-macOS.dmg
 
-      - name: Upload DMG Artifact
-        uses: actions/upload-artifact@v4
+      - name: Publish Permanent GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: UtilityCleanup-macOS-Installer
-          path: UtilityCleanup-macOS.dmg
+          tag_name: v1.0
+          name: Utility Cleanup v1.0 (macOS)
+          files: UtilityCleanup-macOS.dmg
