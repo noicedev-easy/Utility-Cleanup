@@ -1,6 +1,6 @@
 # 🧹 Utility Cleanup for macOS
 
-A fast, lightweight, open-source macOS system optimizer inspired by PC Manager.
+A fast, lightweight, open-source macOS system optimizer inspired by Microsoft PC Manager.
 
 ## ✨ Features
 - **Smart Boost:** Cleans caches, clears old logs, and refreshes your network in one click.
