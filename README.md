@@ -17,3 +17,4 @@ A fast, lightweight, open-source macOS system optimizer inspired by Microsoft PC
 
 > **Note for Mac Users:** Since this is a free open-source indie app, macOS may ask for permission the first time you open it. Just **Right-Click** the app -> click **Open** -> click **Open** again!
 
+How to get the .dmg file: Click Utility Cleanup v1.0 (macOS) under Releases on the right side of this page and download UtilityCleanup-macOS.dmg!
