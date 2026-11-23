@@ -3,6 +3,8 @@ name: Build macOS App
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+          - '**.md'
   workflow_dispatch:
 
 permissions:
@@ -10,7 +12,8 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-15
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
